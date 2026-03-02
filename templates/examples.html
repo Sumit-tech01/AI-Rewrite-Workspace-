@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Nebula Demo Scenarios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef7f5;
+      --bg-alt: #e5f2ef;
+      --surface: #ffffff;
+      --surface-soft: #f5faf9;
+      --text: #0f2228;
+      --muted: #5b7680;
+      --line: #d4e7e2;
+      --brand: #149f98;
+      --accent: #f1a041;
+      --ok: #1f9f68;
+      --danger: #d34a4a;
+      --shadow-lg: 0 28px 62px rgba(9, 41, 54, 0.14);
+      --shadow-md: 0 15px 31px rgba(11, 47, 62, 0.12);
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --ease: 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #08161c;
+      --bg-alt: #0e232c;
+      --surface: #102831;
+      --surface-soft: #0b1f26;
+      --text: #e8f8f6;
+      --muted: #9eb7bf;
+      --line: #21424d;
+      --brand: #22b8ad;
+      --accent: #ffb760;
+      --ok: #49d89a;
+      --danger: #ff8989;
+      --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.46);
+      --shadow-md: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(860px 500px at -10% -16%, color-mix(in srgb, var(--brand) 20%, transparent), transparent 58%),
+        radial-gradient(680px 420px at 110% -18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 56%),
+        linear-gradient(140deg, var(--bg), var(--bg-alt));
+      background-attachment: fixed;
+      padding: 0 0 20px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell {
+      width: min(1180px, 100% - 26px);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 170deg, var(--brand), #4ddfd5, var(--accent), var(--brand));
+      box-shadow: 0 12px 26px color-mix(in srgb, var(--brand) 34%, transparent);
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 2px 0 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1.02rem;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-link,
+    .theme-btn,
+    .run-btn,
+    .ghost-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-link:hover,
+    .theme-btn:hover,
+    .run-btn:hover,
+    .ghost-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 48%, var(--line));
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero {
+      margin-bottom: 14px;
+      animation: rise 420ms var(--ease);
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.45rem, 4.3vw, 2.3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.06;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 0.96rem;
+    }
+
+    .controls {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .api-key {
+      min-width: 240px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      transition: border-color var(--ease), box-shadow var(--ease);
+      font-family: inherit;
+    }
+
+    .api-key:focus {
+      outline: none;
+      border-color: color-mix(in srgb, var(--brand) 56%, var(--line));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(150deg, color-mix(in srgb, var(--surface) 95%, transparent), color-mix(in srgb, var(--surface-soft) 94%, transparent));
+      box-shadow: var(--shadow-md);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chip {
+      border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line));
+      border-radius: 999px;
+      width: fit-content;
+      padding: 4px 9px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--brand);
+      background: color-mix(in srgb, var(--brand) 11%, transparent);
+    }
+
+    .title {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .text {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      padding: 10px;
+      line-height: 1.5;
+      font-size: 0.93rem;
+      min-height: 100px;
+      color: color-mix(in srgb, var(--text) 92%, transparent);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .run-btn {
+      background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 52%, #0d6166));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--brand) 34%, transparent);
+    }
+
+    .result {
+      border-top: 1px dashed var(--line);
+      padding-top: 9px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      min-height: 22px;
+      font-weight: 700;
+    }
+
+    .toast {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      width: min(360px, calc(100vw - 28px));
+      z-index: 60;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-lg);
+      padding: 10px 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: transform var(--ease), opacity var(--ease);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .toast.error {
+      border-color: color-mix(in srgb, var(--danger) 52%, var(--line));
+      color: var(--danger);
+    }
+
+    .toast.ok {
+      border-color: color-mix(in srgb, var(--ok) 52%, var(--line));
+      color: var(--ok);
+    }
+
+    @keyframes rise {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .api-key { min-width: 100%; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(1180px, 100% - 18px); }
+    }
+  </style>
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme_preference');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="Analyzer home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <p>Nebula Suite</p>
+          <h1>Demo Scenarios</h1>
+        </span>
+      </a>
+      <nav class="links" aria-label="Primary navigation">
+        <a class="btn-link" href="/">Analyzer</a>
+        <a class="btn-link" href="/dashboard">Dashboard</a>
+        <a class="btn-link" href="/history">History</a>
+        <a class="btn-link" href="https://sumitjagtap.vercel.app" target="_blank" rel="noopener noreferrer">About Sumit</a>
+        <button id="themeToggle" class="theme-btn" type="button">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <h2>One-click showcase prompts for fast demos and client walkthroughs.</h2>
+      <p>Run instant API tests, jump into the analyzer with prefilled text, and compare confidence at a glance.</p>
+    </section>
+
+    <section class="controls" aria-label="Demo controls">
+      <input id="apiKeyInput" class="api-key" type="password" autocomplete="off" placeholder="API key (optional)">
+    </section>
+
+    <section class="grid" aria-label="Demo examples">
+      {% for ex in demo_examples %}
+      <article class="card" data-index="{{ loop.index0 }}" data-text="{{ ex.text|e }}">
+        <span class="chip">{{ ex.category }}</span>
+        <h3 class="title">{{ ex.title }}</h3>
+        <div class="text">{{ ex.text }}</div>
+        <div class="action-row">
+          <a class="ghost-btn" href="/?text={{ ex.text|urlencode }}">Open in Analyzer</a>
+          <button class="run-btn" type="button">Quick API Test</button>
+        </div>
+        <div class="result" id="result-{{ loop.index0 }}"></div>
+      </article>
+      {% endfor %}
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const CLIENT_API_KEY_STORAGE_KEY = 'client_api_key';
+
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    function initTheme() {
+      const btn = document.getElementById('themeToggle');
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      btn.textContent = current === 'dark' ? 'Light' : 'Dark';
+      btn.addEventListener('click', () => {
+        const now = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = now === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme_preference', next);
+        btn.textContent = next === 'dark' ? 'Light' : 'Dark';
+      });
+    }
+
+    function showToast(message, type = 'error') {
+      toast.textContent = message;
+      toast.className = `toast show ${type === 'success' ? 'ok' : 'error'}`;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.className = 'toast';
+      }, 2800);
+    }
+
+    function initApiKeyInput() {
+      const stored = localStorage.getItem(CLIENT_API_KEY_STORAGE_KEY);
+      if (stored) apiKeyInput.value = stored;
+      const sync = () => {
+        const value = (apiKeyInput.value || '').trim();
+        if (value) localStorage.setItem(CLIENT_API_KEY_STORAGE_KEY, value);
+        else localStorage.removeItem(CLIENT_API_KEY_STORAGE_KEY);
+      };
+      apiKeyInput.addEventListener('change', sync);
+      apiKeyInput.addEventListener('blur', sync);
+    }
+
+    function buildHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      const key = (apiKeyInput.value || '').trim();
+      if (key) headers['X-API-Key'] = key;
+      return headers;
+    }
+
+    for (const btn of document.querySelectorAll('.run-btn')) {
+      btn.addEventListener('click', async () => {
+        const card = btn.closest('.card');
+        const text = card.dataset.text || '';
+        const index = card.dataset.index;
+        const resultEl = document.getElementById(`result-${index}`);
+
+        resultEl.textContent = 'Running analysis...';
+
+        try {
+          const res = await fetch('/api/sentiment', {
+            method: 'POST',
+            headers: buildHeaders(),
+            body: JSON.stringify({ text, compare_models: true })
+          });
+          const json = await res.json();
+          if (!res.ok || !json.success) {
+            throw new Error(json.error || 'Failed');
+          }
+
+          const r = json.result;
+          resultEl.textContent = `${r.sentiment.toUpperCase()} (${r.confidence_percentage}) | top emotion: ${r.top_emotion}`;
+          showToast('Example analyzed.', 'success');
+        } catch (err) {
+          resultEl.textContent = `Error: ${err.message}`;
+          showToast(err.message || 'Request failed.');
+        }
+      });
+    }
+
+    initTheme();
+    initApiKeyInput();
+  </script>
+</body>
+</html>

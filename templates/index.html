@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Nebula Rewrite Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f2f8f7;
+      --bg-alt: #e8f3f2;
+      --surface: #ffffff;
+      --surface-2: #f7fbfb;
+      --ink: #102026;
+      --ink-soft: #56727b;
+      --line: #d2e4e1;
+      --brand: #0e9f99;
+      --brand-strong: #0b7f7a;
+      --accent: #f19d38;
+      --danger: #d14343;
+      --ok: #1f9d67;
+      --shadow-lg: 0 28px 60px rgba(6, 39, 54, 0.14);
+      --shadow-md: 0 16px 34px rgba(9, 51, 67, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --ease: 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #08141a;
+      --bg-alt: #0d222a;
+      --surface: #10262d;
+      --surface-2: #0b1d24;
+      --ink: #e8f7f5;
+      --ink-soft: #9bb5bc;
+      --line: #1f3d47;
+      --brand: #20b7ad;
+      --brand-strong: #16958c;
+      --accent: #ffb95f;
+      --danger: #ff7f7f;
+      --ok: #4ad79a;
+      --shadow-lg: 0 26px 64px rgba(0, 0, 0, 0.45);
+      --shadow-md: 0 14px 30px rgba(0, 0, 0, 0.36);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1000px 580px at -8% -12%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 58%),
+        radial-gradient(820px 520px at 108% -18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 56%),
+        linear-gradient(140deg, var(--bg), var(--bg-alt));
+      background-attachment: fixed;
+      line-height: 1.4;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(color-mix(in srgb, var(--ink-soft) 18%, transparent) 1px, transparent 1px);
+      background-size: 18px 18px;
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    .shell {
+      width: min(1160px, 100% - 28px);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+    }
+
+    .topbar-inner {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 120deg, var(--brand), #42d9ce, var(--accent), var(--brand));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 12px 28px color-mix(in srgb, var(--brand) 35%, transparent);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      letter-spacing: -0.02em;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill,
+    .ghost-btn,
+    .theme-btn {
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .pill:hover,
+    .ghost-btn:hover,
+    .theme-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 46%, var(--line));
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero {
+      padding: 36px 0 18px;
+      display: grid;
+      gap: 16px;
+      animation: rise 480ms var(--ease);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      border: 1px solid color-mix(in srgb, var(--brand) 36%, var(--line));
+      background: color-mix(in srgb, var(--brand) 12%, transparent);
+      color: var(--brand-strong);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.8rem, 5.4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 760px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: clamp(0.95rem, 2.2vw, 1.06rem);
+      max-width: 680px;
+    }
+
+    .flash-list {
+      margin: 0 0 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .flash {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      padding: 11px 13px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+      animation: rise 350ms var(--ease);
+    }
+
+    .flash.error {
+      border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+    }
+
+    .flash.success {
+      border-color: color-mix(in srgb, var(--ok) 45%, var(--line));
+      color: var(--ok);
+      background: color-mix(in srgb, var(--ok) 12%, var(--surface));
+    }
+
+    .studio {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(150deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--surface-2) 96%, transparent));
+      box-shadow: var(--shadow-lg);
+      padding: clamp(16px, 3vw, 26px);
+      animation: rise 460ms var(--ease);
+    }
+
+    .studio-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .studio-title {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .live-chip {
+      border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--line));
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--ok);
+      background: color-mix(in srgb, var(--ok) 12%, transparent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .studio-sub {
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+      font-size: 0.94rem;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
+    }
+
+    .label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--ink-soft);
+      font-weight: 800;
+    }
+
+    .counter {
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      font-weight: 700;
+    }
+
+    textarea,
+    select,
+    input[type="password"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+    }
+
+    textarea {
+      min-height: 190px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    textarea:focus,
+    select:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+
+    .submit {
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 52%, #0d6166));
+      color: #ffffff;
+      height: 46px;
+      font-size: 0.93rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform var(--ease), filter var(--ease), box-shadow var(--ease);
+      box-shadow: 0 16px 30px color-mix(in srgb, var(--brand) 38%, transparent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .submit:hover {
+      transform: translateY(-1px);
+      filter: saturate(1.12);
+    }
+
+    .submit:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.38);
+      border-top-color: #fff;
+      animation: spin 0.85s linear infinite;
+      display: none;
+    }
+
+    .spinner.show {
+      display: inline-block;
+    }
+
+    .result {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+      padding: 14px;
+      display: none;
+      animation: rise 380ms var(--ease);
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .result-head h3 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .copy {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 7px 11px;
+      cursor: pointer;
+      transition: transform var(--ease), border-color var(--ease);
+      font-family: inherit;
+    }
+
+    .copy:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 46%, var(--line));
+    }
+
+    .out-grid {
+      display: grid;
+      gap: 9px;
+    }
+
+    .out-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      padding: 10px;
+    }
+
+    .out-card .k {
+      font-size: 0.71rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--ink-soft);
+      font-weight: 800;
+      margin: 0 0 4px;
+    }
+
+    .out-card .v {
+      margin: 0;
+      font-size: 0.92rem;
+      word-break: break-word;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      padding: 9px;
+    }
+
+    .metric .k {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+
+    .metric .v {
+      margin: 5px 0 0;
+      font-size: 0.86rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .foot {
+      margin: 18px 0 26px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 0.78rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 70;
+      width: min(360px, calc(100vw - 28px));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      padding: 11px 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      transform: translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform var(--ease), opacity var(--ease);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast.error {
+      border-color: color-mix(in srgb, var(--danger) 52%, var(--line));
+      color: var(--danger);
+    }
+
+    .toast.ok {
+      border-color: color-mix(in srgb, var(--ok) 48%, var(--line));
+      color: var(--ok);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(9px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: min(1160px, 100% - 18px);
+      }
+
+      .hero {
+        padding-top: 24px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <p>Nebula Suite</p>
+          <h1>Rewrite Studio</h1>
+        </span>
+      </a>
+
+      <div class="top-actions">
+        <a class="pill" href="/dashboard">Dashboard</a>
+        <a class="pill" href="/examples">Examples</a>
+        <a class="pill" href="/history">History</a>
+        <a class="pill" href="https://sumitjagtap.vercel.app" target="_blank" rel="noopener noreferrer">About Sumit</a>
+        <button id="themeToggle" class="theme-btn" type="button" aria-label="Toggle theme">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-badges">
+        <span class="badge">Rewrite Intelligence</span>
+        <span class="badge">Sentiment-Aware</span>
+        <span class="badge">API Driven</span>
+      </div>
+      <h2>Turn rough text into sharp, publication-ready writing in seconds.</h2>
+      <p>
+        Run advanced rewrite + sentiment scoring in one flow. Keep your meaning intact, control tone,
+        and get transparent model output.
+      </p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <section class="flash-list" aria-label="Messages">
+        {% for category, message in messages %}
+        <article class="flash {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</article>
+        {% endfor %}
+      </section>
+      {% endif %}
+    {% endwith %}
+
+    <section class="studio" aria-label="Rewrite workspace">
+      <div class="studio-head">
+        <h3 class="studio-title">AI Rewrite Workspace</h3>
+        <span class="live-chip">Live API</span>
+      </div>
+      <p class="studio-sub">Provide text, choose style and tone, optionally attach API key for protected mode.</p>
+
+      <form id="rewriteForm" novalidate>
+        <div class="field">
+          <div class="field-row">
+            <label for="rewriteInput" class="label">Input Text</label>
+            <span id="charCounter" class="counter">0 chars</span>
+          </div>
+          <textarea id="rewriteInput" name="text" placeholder="Paste or write your draft here...">{{ prefill_text|default('') }}</textarea>
+        </div>
+
+        <div class="controls">
+          <div class="field" style="margin:0;">
+            <label for="styleSelect" class="label">Style</label>
+            <select id="styleSelect" name="style">
+              <option value="clear" selected>Clear</option>
+              <option value="formal">Formal</option>
+              <option value="simple">Simple</option>
+              <option value="friendly">Friendly</option>
+            </select>
+          </div>
+
+          <div class="field" style="margin:0;">
+            <label for="toneSelect" class="label">Target Tone</label>
+            <select id="toneSelect" name="target_tone">
+              <option value="positive" selected>Positive</option>
+              <option value="professional">Professional</option>
+              <option value="neutral">Neutral</option>
+              <option value="friendly">Friendly</option>
+              <option value="very_positive">Very Positive</option>
+              <option value="negative">Negative</option>
+            </select>
+          </div>
+
+          <div class="field" style="margin:0;">
+            <label for="apiKeyInput" class="label">API Key (Optional)</label>
+            <input id="apiKeyInput" name="api_key" type="password" autocomplete="off" placeholder="sk-...">
+          </div>
+        </div>
+
+        <button id="rewriteBtn" class="submit" type="submit">
+          <span id="loadingSpinner" class="spinner" aria-hidden="true"></span>
+          <span id="rewriteBtnLabel">Rewrite Now</span>
+        </button>
+      </form>
+
+      <section id="resultSection" class="result" aria-live="polite" aria-label="Rewrite result">
+        <div class="result-head">
+          <h3>Output</h3>
+          <button id="copyBtn" class="copy" type="button">Copy Rewritten Text</button>
+        </div>
+
+        <div class="out-grid">
+          <article class="out-card">
+            <p class="k">Corrected Text</p>
+            <p id="correctedText" class="v">-</p>
+          </article>
+
+          <article class="out-card">
+            <p class="k">Rewritten Text</p>
+            <p id="rewrittenText" class="v">-</p>
+          </article>
+
+          <section class="metrics" aria-label="Result metrics">
+            <article class="metric">
+              <p class="k">Sentiment</p>
+              <p id="sentimentOut" class="v">-</p>
+            </article>
+            <article class="metric">
+              <p class="k">Confidence</p>
+              <p id="confidenceOut" class="v">-</p>
+            </article>
+            <article class="metric">
+              <p class="k">Provider</p>
+              <p id="providerOut" class="v">-</p>
+            </article>
+            <article class="metric">
+              <p class="k">Model</p>
+              <p id="modelOut" class="v">-</p>
+            </article>
+          </section>
+
+          <article class="out-card">
+            <p class="k">Notes</p>
+            <p id="notesOut" class="v">-</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <footer class="foot">&copy; 2026 Nebula Rewrite Studio</footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const CLIENT_API_KEY_STORAGE_KEY = 'client_api_key';
+
+    const dom = {
+      themeToggle: document.getElementById('themeToggle'),
+      rewriteForm: document.getElementById('rewriteForm'),
+      rewriteInput: document.getElementById('rewriteInput'),
+      styleSelect: document.getElementById('styleSelect'),
+      toneSelect: document.getElementById('toneSelect'),
+      apiKeyInput: document.getElementById('apiKeyInput'),
+      rewriteBtn: document.getElementById('rewriteBtn'),
+      rewriteBtnLabel: document.getElementById('rewriteBtnLabel'),
+      loadingSpinner: document.getElementById('loadingSpinner'),
+      charCounter: document.getElementById('charCounter'),
+      resultSection: document.getElementById('resultSection'),
+      correctedText: document.getElementById('correctedText'),
+      rewrittenText: document.getElementById('rewrittenText'),
+      sentimentOut: document.getElementById('sentimentOut'),
+      confidenceOut: document.getElementById('confidenceOut'),
+      providerOut: document.getElementById('providerOut'),
+      modelOut: document.getElementById('modelOut'),
+      notesOut: document.getElementById('notesOut'),
+      copyBtn: document.getElementById('copyBtn'),
+      toast: document.getElementById('toast')
+    };
+
+    let toastTimer = null;
+
+    function initTheme() {
+      const saved = localStorage.getItem('theme_preference');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const nextTheme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      dom.themeToggle.textContent = nextTheme === 'dark' ? 'Light' : 'Dark';
+
+      dom.themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme_preference', next);
+        dom.themeToggle.textContent = next === 'dark' ? 'Light' : 'Dark';
+      });
+    }
+
+    function showToast(message, type = 'error') {
+      dom.toast.textContent = message;
+      dom.toast.className = `toast show ${type === 'success' ? 'ok' : 'error'}`;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        dom.toast.className = 'toast';
+      }, 3000);
+    }
+
+    function setLoading(loading) {
+      dom.rewriteBtn.disabled = loading;
+      dom.loadingSpinner.classList.toggle('show', loading);
+      dom.rewriteBtnLabel.textContent = loading ? 'Rewriting...' : 'Rewrite Now';
+    }
+
+    function updateCounter() {
+      dom.charCounter.textContent = `${dom.rewriteInput.value.length} chars`;
+    }
+
+    function getClientApiKey() {
+      return (dom.apiKeyInput?.value || '').trim();
+    }
+
+    function syncApiKeyStorage() {
+      const key = getClientApiKey();
+      if (key) {
+        localStorage.setItem(CLIENT_API_KEY_STORAGE_KEY, key);
+      } else {
+        localStorage.removeItem(CLIENT_API_KEY_STORAGE_KEY);
+      }
+    }
+
+    function initApiKeyInput() {
+      const stored = localStorage.getItem(CLIENT_API_KEY_STORAGE_KEY);
+      if (stored && dom.apiKeyInput) dom.apiKeyInput.value = stored;
+      if (!dom.apiKeyInput) return;
+      dom.apiKeyInput.addEventListener('change', syncApiKeyStorage);
+      dom.apiKeyInput.addEventListener('blur', syncApiKeyStorage);
+    }
+
+    function buildJsonHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      const key = getClientApiKey();
+      if (key) headers['X-API-Key'] = key;
+      return headers;
+    }
+
+    function setResult(result) {
+      dom.correctedText.textContent = result.corrected_text || '-';
+      dom.rewrittenText.textContent = result.rewritten_text || '-';
+      dom.sentimentOut.textContent = result.sentiment || '-';
+      dom.confidenceOut.textContent = result.confidence_percentage || '-';
+      dom.providerOut.textContent = result.provider || '-';
+      dom.modelOut.textContent = result.model || '-';
+      dom.notesOut.textContent = result.notes || '-';
+      dom.resultSection.classList.add('show');
+      dom.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    async function parseJsonResponse(res) {
+      const text = await res.text();
+      if (!text) return { success: res.ok };
+      try {
+        return JSON.parse(text);
+      } catch (_err) {
+        return { success: false, error: text || 'Invalid server response' };
+      }
+    }
+
+    async function submitRewrite(event) {
+      event.preventDefault();
+      const text = dom.rewriteInput.value.trim();
+      const style = dom.styleSelect.value;
+      const targetTone = dom.toneSelect.value;
+
+      if (!text) {
+        showToast('Please enter text to rewrite.');
+        dom.rewriteInput.focus();
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const res = await fetch('/api/rewrite', {
+          method: 'POST',
+          headers: buildJsonHeaders(),
+          body: JSON.stringify({
+            text,
+            style,
+            target_tone: targetTone
+          })
+        });
+
+        const json = await parseJsonResponse(res);
+        if (!res.ok || !json.success) {
+          if (res.status === 401) {
+            showToast('API key required. Add a valid key and retry.');
+            return;
+          }
+          showToast(json.error || 'Rewrite failed.');
+          return;
+        }
+
+        setResult(json.result || {});
+        showToast('Rewrite completed.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Network error.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function copyRewrittenText() {
+      const text = dom.rewrittenText.textContent || '';
+      if (!text || text === '-') {
+        showToast('No rewritten text to copy.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard.', 'success');
+      } catch (_err) {
+        showToast('Copy failed.');
+      }
+    }
+
+    dom.rewriteForm.addEventListener('submit', submitRewrite);
+    dom.rewriteInput.addEventListener('input', updateCounter);
+    dom.copyBtn.addEventListener('click', copyRewrittenText);
+
+    initTheme();
+    initApiKeyInput();
+    updateCounter();
+  </script>
+</body>
+</html>

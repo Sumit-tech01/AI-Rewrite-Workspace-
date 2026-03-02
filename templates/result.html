@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Nebula Analysis Result</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef7f5;
+      --bg-alt: #e6f2f0;
+      --surface: #ffffff;
+      --surface-soft: #f5faf9;
+      --text: #102329;
+      --muted: #5d7881;
+      --line: #d4e7e2;
+      --brand: #149f98;
+      --accent: #f1a041;
+      --pos: #1f9f68;
+      --neg: #d34a4a;
+      --neu: #cf8a2c;
+      --shadow-lg: 0 30px 66px rgba(10, 42, 55, 0.16);
+      --shadow-md: 0 16px 32px rgba(11, 47, 62, 0.13);
+      --radius-xl: 26px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --ease: 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #08161c;
+      --bg-alt: #0e232c;
+      --surface: #102831;
+      --surface-soft: #0b1f26;
+      --text: #e8f8f6;
+      --muted: #9eb7bf;
+      --line: #21424d;
+      --brand: #22b8ad;
+      --accent: #ffb760;
+      --pos: #49d89a;
+      --neg: #ff8989;
+      --neu: #ffbe70;
+      --shadow-lg: 0 32px 70px rgba(0, 0, 0, 0.48);
+      --shadow-md: 0 17px 34px rgba(0, 0, 0, 0.36);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(820px 500px at -10% -16%, color-mix(in srgb, var(--brand) 20%, transparent), transparent 58%),
+        radial-gradient(660px 420px at 110% -18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 56%),
+        linear-gradient(140deg, var(--bg), var(--bg-alt));
+      background-attachment: fixed;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 95%, transparent), color-mix(in srgb, var(--surface-soft) 94%, transparent));
+      box-shadow: var(--shadow-lg);
+      padding: clamp(18px, 3vw, 28px);
+      animation: rise 420ms var(--ease);
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .head h1 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.2rem, 3.6vw, 1.8rem);
+      letter-spacing: -0.02em;
+    }
+
+    .head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .theme-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+      font-family: inherit;
+    }
+
+    .theme-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 48%, var(--line));
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      padding: 14px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .sentiment {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.4rem, 5vw, 2.1rem);
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .sentiment.positive { color: var(--pos); }
+    .sentiment.negative { color: var(--neg); }
+    .sentiment.neutral { color: var(--neu); }
+
+    .confidence {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .text-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface-soft) 94%, transparent);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .text-box .k {
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      font-weight: 800;
+    }
+
+    .text-box .v {
+      margin: 0;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .action {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      color: var(--text);
+      text-decoration: none;
+      padding: 9px 13px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+    }
+
+    .action:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 48%, var(--line));
+      box-shadow: var(--shadow-md);
+    }
+
+    .action.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 52%, #0d6166));
+      color: #fff;
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--brand) 34%, transparent);
+    }
+
+    @keyframes rise {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme_preference');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+  <main class="card" aria-label="Analysis result">
+    <header class="head">
+      <div>
+        <h1>Sentiment Analysis Result</h1>
+        <p>Generated by Nebula Sentiment Server</p>
+      </div>
+      <button id="themeToggle" class="theme-btn" type="button">Dark</button>
+    </header>
+
+    <section class="hero">
+      <div class="emoji" aria-hidden="true">
+        {% if sentiment == 'positive' %}
+          🙂
+        {% elif sentiment == 'neutral' %}
+          😐
+        {% else %}
+          🙁
+        {% endif %}
+      </div>
+      <p class="sentiment {{ sentiment|lower }}">{{ sentiment|upper }}</p>
+      <p class="confidence">Confidence: {{ confidence }}</p>
+    </section>
+
+    <section class="text-box">
+      <p class="k">Analyzed Text</p>
+      <p class="v">{{ text }}</p>
+    </section>
+
+    <section class="actions">
+      <a class="action primary" href="/">Analyze More</a>
+      <a class="action" href="/history">View History</a>
+      <a class="action" href="/dashboard">Open Dashboard</a>
+      <a class="action" href="https://sumitjagtap.vercel.app" target="_blank" rel="noopener noreferrer">About / Contact Sumit</a>
+    </section>
+  </main>
+
+  <script>
+    (function initThemeToggle() {
+      const btn = document.getElementById('themeToggle');
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      btn.textContent = current === 'dark' ? 'Light' : 'Dark';
+      btn.addEventListener('click', () => {
+        const now = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = now === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme_preference', next);
+        btn.textContent = next === 'dark' ? 'Light' : 'Dark';
+      });
+    })();
+  </script>
+</body>
+</html>

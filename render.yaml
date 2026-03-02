@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: custom-sentiment-server
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python train_model.py
+    startCommand: gunicorn server:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: DEBUG
+        value: "false"
+      - key: DEFAULT_AUTO_TRANSLATE
+        value: "true"
+      - key: GOOGLE_AI_MODEL
+        value: gemini-flash-latest
+      - key: GOOGLE_AI_FALLBACK_MODEL
+        value: gemini-2.5-flash
+      - key: GOOGLE_AI_MAX_RETRIES
+        value: "2"
+      - key: GOOGLE_AI_RETRY_BACKOFF_SECONDS
+        value: "1.25"
+      - key: GOOGLE_AI_MAX_CONCURRENT_REQUESTS
+        value: "3"
+      - key: RATE_LIMIT_DEFAULT
+        value: "20 per minute"
+      - key: RATE_LIMIT_REWRITE
+        value: "5 per minute"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_TOKEN
+        generateValue: true

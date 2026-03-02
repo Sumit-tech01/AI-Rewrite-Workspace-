@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Nebula History Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef7f5;
+      --bg-alt: #e6f2f0;
+      --surface: #ffffff;
+      --surface-soft: #f5faf9;
+      --text: #102329;
+      --muted: #5d7881;
+      --line: #d4e7e2;
+      --brand: #149f98;
+      --accent: #f1a041;
+      --pos: #1f9f68;
+      --neg: #d34a4a;
+      --neu: #cf8a2c;
+      --shadow-lg: 0 28px 62px rgba(10, 42, 55, 0.14);
+      --shadow-md: 0 15px 31px rgba(11, 47, 62, 0.12);
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --ease: 250ms cubic-bezier(0.22, 0.8, 0.22, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #08161c;
+      --bg-alt: #0e232c;
+      --surface: #102831;
+      --surface-soft: #0b1f26;
+      --text: #e8f8f6;
+      --muted: #9eb7bf;
+      --line: #21424d;
+      --brand: #22b8ad;
+      --accent: #ffb760;
+      --pos: #49d89a;
+      --neg: #ff8989;
+      --neu: #ffbe70;
+      --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.46);
+      --shadow-md: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at -8% -16%, color-mix(in srgb, var(--brand) 20%, transparent), transparent 58%),
+        radial-gradient(700px 420px at 110% -18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 56%),
+        linear-gradient(142deg, var(--bg), var(--bg-alt));
+      background-attachment: fixed;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell { width: min(1180px, 100% - 26px); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 180deg, var(--brand), #4ddfd5, var(--accent), var(--brand));
+      box-shadow: 0 12px 24px color-mix(in srgb, var(--brand) 34%, transparent);
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 2px 0 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1.02rem;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-link,
+    .theme-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-link:hover,
+    .theme-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--brand) 48%, var(--line));
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero {
+      margin-bottom: 12px;
+      animation: rise 420ms var(--ease);
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.45rem, 4.3vw, 2.3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.06;
+    }
+
+    .hero p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 0.96rem;
+    }
+
+    .toolbar {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      min-width: 240px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      color: var(--text);
+      font-size: 0.83rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      transition: border-color var(--ease), box-shadow var(--ease);
+      font-family: inherit;
+    }
+
+    .search:focus {
+      outline: none;
+      border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent);
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(150deg, color-mix(in srgb, var(--surface) 95%, transparent), color-mix(in srgb, var(--surface-soft) 94%, transparent));
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 230px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+      font-size: 0.87rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 9px;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.68rem;
+      font-weight: 800;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: color-mix(in srgb, var(--surface-soft) 96%, transparent);
+    }
+
+    tbody tr:hover {
+      background: color-mix(in srgb, var(--brand) 8%, transparent);
+    }
+
+    .timestamp {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .text-preview {
+      max-width: 390px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-weight: 600;
+    }
+
+    .sentiment {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .sentiment.positive {
+      color: var(--pos);
+      border-color: color-mix(in srgb, var(--pos) 44%, var(--line));
+      background: color-mix(in srgb, var(--pos) 12%, transparent);
+    }
+
+    .sentiment.negative {
+      color: var(--neg);
+      border-color: color-mix(in srgb, var(--neg) 44%, var(--line));
+      background: color-mix(in srgb, var(--neg) 12%, transparent);
+    }
+
+    .sentiment.neutral {
+      color: var(--neu);
+      border-color: color-mix(in srgb, var(--neu) 44%, var(--line));
+      background: color-mix(in srgb, var(--neu) 12%, transparent);
+    }
+
+    .confidence {
+      min-width: 120px;
+    }
+
+    .confidence-bar {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      height: 9px;
+      background: color-mix(in srgb, var(--surface-soft) 98%, transparent);
+      overflow: hidden;
+      margin: 0 0 5px;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+    }
+
+    .confidence-text {
+      font-size: 0.77rem;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .empty {
+      padding: 44px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(1180px, 100% - 18px); }
+      .search { min-width: 100%; }
+    }
+  </style>
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme_preference');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="Analyzer home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <p>Nebula Suite</p>
+          <h1>History Ledger</h1>
+        </span>
+      </a>
+      <nav class="links" aria-label="Primary navigation">
+        <a class="btn-link" href="/">Analyzer</a>
+        <a class="btn-link" href="/dashboard">Dashboard</a>
+        <a class="btn-link" href="/examples">Examples</a>
+        <a class="btn-link" href="https://sumitjagtap.vercel.app" target="_blank" rel="noopener noreferrer">About Sumit</a>
+        <button id="themeToggle" class="theme-btn" type="button">Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <h2>Prediction timeline with confidence and sentiment context.</h2>
+      <p>Inspect previous analyses, filter quickly, and identify quality trends over time.</p>
+    </section>
+
+    <section class="toolbar" aria-label="History filters">
+      <input id="searchInput" class="search" type="search" placeholder="Filter by text, sentiment, or timestamp...">
+    </section>
+
+    <section class="panel" aria-label="Prediction history table">
+      {% if predictions %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Text</th>
+              <th>Sentiment</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            {% for pred in predictions|reverse %}
+            {% set conf_pct = ('%.2f'|format((pred.confidence|float) * 100)) %}
+            <tr>
+              <td class="timestamp">{{ pred.timestamp }}</td>
+              <td class="text-preview" title="{{ pred.text }}">{{ pred.text }}</td>
+              <td><span class="sentiment {{ pred.sentiment|lower }}">{{ pred.sentiment|upper }}</span></td>
+              <td class="confidence">
+                <div class="confidence-bar" aria-hidden="true">
+                  <div class="confidence-fill" style="width: {{ conf_pct }}%;"></div>
+                </div>
+                <span class="confidence-text">{{ conf_pct }}%</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">
+        No predictions yet. Start with the analyzer and your events will appear here.
+      </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+    function initTheme() {
+      const btn = document.getElementById('themeToggle');
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      btn.textContent = current === 'dark' ? 'Light' : 'Dark';
+      btn.addEventListener('click', () => {
+        const now = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = now === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme_preference', next);
+        btn.textContent = next === 'dark' ? 'Light' : 'Dark';
+      });
+    }
+
+    function initSearch() {
+      const input = document.getElementById('searchInput');
+      const body = document.getElementById('historyBody');
+      if (!input || !body) return;
+      const rows = Array.from(body.querySelectorAll('tr'));
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        rows.forEach((row) => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = !query || text.includes(query) ? '' : 'none';
+        });
+      });
+    }
+
+    initTheme();
+    initSearch();
+  </script>
+</body>
+</html>
